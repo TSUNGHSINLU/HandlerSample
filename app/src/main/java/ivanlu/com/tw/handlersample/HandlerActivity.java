@@ -9,10 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.badoo.mobile.util.WeakHandler;
+
 public class HandlerActivity extends AppCompatActivity {
 
     private final static String TAG = HandlerActivity.class.getSimpleName();
 
+    private WeakHandler mHandler; // We still need at least one hard reference to WeakHandler
     private HandlerThread mWorker = null;
     private Handler mWorkerHandler = null;
 
@@ -58,11 +61,18 @@ public class HandlerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handler);
         Log.d(TAG, "onCreate");
+        mHandler = new WeakHandler();
         mWorker = new HandlerThread("load_data_worker");
         mWorker.start();
         mWorkerHandler = new ApplyDataHandler(mWorker.getLooper());
         handler.sendEmptyMessage(0);
         mWorkerHandler.sendEmptyMessage(0);
+
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                Log.d(TAG, "library UI postDelayed1");
+            }
+        }, 2000);
 
         handler.postDelayed(new Runnable() {
             public void run() {
